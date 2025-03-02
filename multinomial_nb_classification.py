@@ -1,5 +1,5 @@
-import numpy as np
-import pandas as pd
+import numpy
+import pandas
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 class MultinomialNaiveBayes:
@@ -11,37 +11,37 @@ class MultinomialNaiveBayes:
         # x is the feature matrix 
         # y is the label: spam vs ham
 
-        n_samples, n_features = X.shape
-        self.classes = np.unique(y)
-        n_classes = len(self.classes)
+        num_samples, num_features = X.shape
+        self.classes = numpy.unique(y)
+        num_classes = len(self.classes)
         
         #calculate class priors
-        self.class_priors = np.zeros(n_classes)
+        self.class_priors = numpy.zeros(num_classes)
         for i, c in enumerate(self.classes):
-            self.class_priors[i] = np.sum(y == c) / n_samples
+            self.class_priors[i] = numpy.sum(y == c) / num_samples
         
         #calculate word probabilities
         #ADD ONE LAPLACE SMOOTHING
-        self.feature_probs = np.zeros((n_classes, n_features))
+        self.feature_probs = numpy.zeros((num_classes, num_features))
         
         for i, c in enumerate(self.classes):
             X_c = X[y == c]
             
             #total count of words for this class
-            total_count = np.sum(X_c) + n_features  #add n_features for Laplace smoothing
+            total_count = numpy.sum(X_c) + num_features  #add num_features for Laplace smoothing
             
             #calculate P(each word) with the smoothig 
-            for j in range(n_features):
-                word_count = np.sum(X_c[:, j]) + 1  #add 1
+            for j in range(num_features):
+                word_count = numpy.sum(X_c[:, j]) + 1  #add 1
                 self.feature_probs[i, j] = word_count / total_count
         
         #convert -> log probabilities
-        self.log_class_priors = np.log(self.class_priors)
-        self.log_feature_probs = np.log(self.feature_probs)
+        self.log_class_priors = numpy.log(self.class_priors)
+        self.log_feature_probs = numpy.log(self.feature_probs)
     
     def predict(self, X):
         #X is the feature matrix
-        return np.array([self._predict_sample(x) for x in X])
+        return numpy.array([self._predict_sample(x) for x in X])
     
     def _predict_sample(self, x): #single sample prediction
 
@@ -53,14 +53,14 @@ class MultinomialNaiveBayes:
             
             log_posterior = self.log_class_priors[i]
             #add log likelihood for each feature
-            log_posterior += np.sum(x * self.log_feature_probs[i]) #multiplication bc BoW
+            log_posterior += numpy.sum(x * self.log_feature_probs[i]) #multiplication bc BoW
             posteriors.append(log_posterior)
         
         #return the class with the highest posterior prob
-        return self.classes[np.argmax(posteriors)]
+        return self.classes[numpy.argmax(posteriors)]
 
 def load_data(csv_file):
-    data = pd.read_csv(csv_file)
+    data = pandas.read_csv(csv_file)
     y = data['label'].values
     X = data.drop('label', axis=1).values
     return X, y
