@@ -1,0 +1,16 @@
+venv/
+
+enron1_bernoulli_test.csv
+enron1_bernoulli_train.csv
+enron1_bow_test.csv 
+enron1_bow_train.csv 
+
+enron2_bernoulli_test.csv 
+enron2_bernoulli_train.csv 
+enron2_bow_test.csv 
+enron2_bow_train.csv 
+
+enron4_bernoulli_test.csv 
+enron4_bernoulli_train.csv 
+enron4_bow_test.csv 
+enron4_bow_train.csv
