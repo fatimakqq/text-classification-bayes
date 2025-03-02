@@ -20,120 +20,79 @@ class MultinomialNaiveBayes:
         for i, c in enumerate(self.classes):
             self.class_priors[i] = np.sum(y == c) / n_samples
         
-        # Calculate word probabilities with Laplace smoothing
+        #calculate word probabilities
+        #ADD ONE LAPLACE SMOOTHING
         self.feature_probs = np.zeros((n_classes, n_features))
         
         for i, c in enumerate(self.classes):
             X_c = X[y == c]
             
-            # Calculate the total count of words for this class
-            total_count = np.sum(X_c) + n_features  # Add n_features for Laplace smoothing
+            #total count of words for this class
+            total_count = np.sum(X_c) + n_features  #add n_features for Laplace smoothing
             
-            # Calculate probability for each word with Laplace smoothing
+            #calculate P(each word) with the smoothig 
             for j in range(n_features):
-                word_count = np.sum(X_c[:, j]) + 1  # Add 1 for Laplace smoothing
+                word_count = np.sum(X_c[:, j]) + 1  #add 1
                 self.feature_probs[i, j] = word_count / total_count
         
-        # Convert to log probabilities
+        #convert -> log probabilities
         self.log_class_priors = np.log(self.class_priors)
         self.log_feature_probs = np.log(self.feature_probs)
     
     def predict(self, X):
-        """
-        Predict class labels for samples in X
-        
-        Parameters:
-        X: Feature matrix (BoW representation)
-        
-        Returns:
-        y_pred: Predicted class labels
-        """
+        #X is the feature matrix
         return np.array([self._predict_sample(x) for x in X])
     
-    def _predict_sample(self, x):
-        """
-        Predict class label for a single sample
-        
-        Parameters:
-        x: Feature vector (BoW representation)
-        
-        Returns:
-        predicted_class: Predicted class label
-        """
+    def _predict_sample(self, x): #single sample prediction
+
+        #x is the feature vector
         posteriors = []
         
-        # Calculate posterior probability for each class
+        #calc posterior probability for each class
         for i, c in enumerate(self.classes):
-            # Start with log prior
+            
             log_posterior = self.log_class_priors[i]
-            
-            # Add log likelihood for each feature
-            # For BoW, we multiply the log probabilities by the word count
-            log_posterior += np.sum(x * self.log_feature_probs[i])
-            
+            #add log likelihood for each feature
+            log_posterior += np.sum(x * self.log_feature_probs[i]) #multiplication bc BoW
             posteriors.append(log_posterior)
         
-        # Return the class with the highest posterior probability
+        #return the class with the highest posterior prob
         return self.classes[np.argmax(posteriors)]
 
 def load_data(csv_file):
-    """
-    Load data from CSV file
-    
-    Returns:
-    X: Feature matrix
-    y: Labels
-    """
     data = pd.read_csv(csv_file)
     y = data['label'].values
     X = data.drop('label', axis=1).values
     return X, y
 
 def evaluate_model(y_true, y_pred):
-    """
-    Evaluate model performance
-    
-    Returns:
-    metrics: Dictionary of evaluation metrics
-    """
     metrics = {
         'accuracy': accuracy_score(y_true, y_pred),
         'precision': precision_score(y_true, y_pred),
         'recall': recall_score(y_true, y_pred),
-        'f1': f1_score(y_true, y_pred)
-    }
+        'f1': f1_score(y_true, y_pred)}
     return metrics
 
-def run_multinomial_nb(dataset):
-    """
-    Run Multinomial Naive Bayes on BoW dataset
-    
-    Parameters:
-    dataset: Dataset name (enron1, enron2, or enron4)
-    
-    Returns:
-    metrics: Dictionary of evaluation metrics
-    """
-    train_file = f"{dataset}_bow_train.csv"
-    test_file = f"{dataset}_bow_test.csv"
-    
-    # Load data
+def run_multinomial_nb(dataset_name):
+
+    #create files and load the data - ONLY BAG OF WORDS
+    train_file = f"{dataset_name}_bow_train.csv"
     X_train, y_train = load_data(train_file)
+
+    test_file = f"{dataset_name}_bow_test.csv"
     X_test, y_test = load_data(test_file)
     
-    # Train model
+    #train based on our model
     model = MultinomialNaiveBayes()
     model.fit(X_train, y_train)
     
-    # Make predictions
-    y_pred = model.predict(X_test)
+    y_prediction = model.predict(X_test)
     
-    # Evaluate model
-    metrics = evaluate_model(y_test, y_pred)
-    
+    #run evals
+    metrics = evaluate_model(y_test, y_prediction)
     return metrics
 
-# Run Multinomial Naive Bayes on all datasets
+#run MNB on all 3 datasets
 results = {}
 for dataset in ['enron1', 'enron2', 'enron4']:
     print(f"Running Multinomial Naive Bayes on {dataset}...")
