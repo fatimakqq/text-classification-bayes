@@ -76,11 +76,11 @@ def evaluate_model(y_true, y_pred):
 def run_multinomial_nb(dataset_name):
 
     #create files and load the data - ONLY BAG OF WORDS
-    train_file = f"{dataset_name}_bow_train.csv"
-    X_train, y_train = load_data(train_file)
+    train_csv = f"{dataset_name}_bow_train.csv"
+    X_train, y_train = load_data(train_csv)
 
-    test_file = f"{dataset_name}_bow_test.csv"
-    X_test, y_test = load_data(test_file)
+    test_csv = f"{dataset_name}_bow_test.csv"
+    X_test, y_test = load_data(test_csv)
     
     #train based on our model
     model = MultinomialNaiveBayes()
@@ -95,10 +95,8 @@ def run_multinomial_nb(dataset_name):
 #run MNB on all 3 datasets
 results = {}
 for dataset in ['enron1', 'enron2', 'enron4']:
-    print(f"Running Multinomial Naive Bayes on {dataset}...")
     metrics = run_multinomial_nb(dataset)
     results[dataset] = metrics
-    print(f"Metrics for {dataset}:")
+    print(f"\ncurrent dataset: {dataset}")
     for metric, value in metrics.items():
-        print(f"  {metric}: {value:.4f}")
-    print()
+        print(f"{metric} = {value}")
